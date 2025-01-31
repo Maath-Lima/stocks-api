@@ -1,6 +1,13 @@
 package middleware
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+	"log"
+	"os"
+
+	"github.com/joho/godotenv"
+)
 
 type response struct {
 	ID      int64  `json:"id,omitempty`
@@ -8,5 +15,24 @@ type response struct {
 }
 
 func CreateConnection() *sql.DB {
+	err := godotenv.Load(".env")
 
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	db, err := sql.Open("postgres", os.Getenv("POSTGRES_URL"))
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = db.Ping()
+
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Successufly connected to postgres")
+	return db
 }
