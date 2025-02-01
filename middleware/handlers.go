@@ -19,7 +19,7 @@ type response struct {
 	Message string `json:"message,omitempty`
 }
 
-func CreateConnection() *sql.DB {
+func createConnection() *sql.DB {
 	err := godotenv.Load(".env")
 
 	if err != nil {
@@ -137,4 +137,39 @@ func DeleteStock(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(res)
+}
+
+func insertStock(stock models.Stock) int64 {
+	db := createConnection()
+	defer db.Close()
+
+	sqlStatement := `INSERT INT stocks(name, price, company) VALUES ($1, $2, $3) RETURNING stockid`
+
+	var id int64
+
+	err := db.QueryRow(sqlStatement, stock.Name, stock.Price, stock.Company).Scan(&id)
+
+	if err != nil {
+		log.Fatalf("Unable to execute the query. %v", err)
+	}
+
+	fmt.Printf("Inserted a single record %v", id)
+
+	return id
+}
+
+func getStock(id int64) (models.Stock, error) {
+
+}
+
+func getAllStock() ([]models.Stock, error) {
+
+}
+
+func updateStock(id int64, stock models.Stock) {
+
+}
+
+func deleteStock(id int64) int64 {
+
 }
